@@ -3,41 +3,76 @@
 const request = require('request@2.56.0')
 const qs = require('qs@3.1.0')
 const _ = require('lodash@3.9.3')
+const async = require('async@1.0.0')
 
+const LIMIT_EACH = 5
 const URI_BASE = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&'
 const DEFAULT_PARAMS = {
   user: 'formatfanatic',
-  limit: 200,
   format: 'json'
 }
 
 module.exports = (ctx, cb) => {
   const {data} = ctx
 
-  const params = _.assign({api_key: data.API_KEY}, DEFAULT_PARAMS, _.omit(data, 'API_KEY'))
+  const params = _.assign({api_key: data.API_KEY}, DEFAULT_PARAMS, _.omit(data, 'API_KEY'), {limit: LIMIT_EACH})
   const fetchUrl = `${URI_BASE}${qs.stringify(params)}`
 
-  request(fetchUrl, (__, ___, body) => {
-    const jsonBody = JSON.parse(body)
-    if (jsonBody.error) {
-      return cb(new Error(`${jsonBody.error}: ${jsonBody.message}`))
-    }
+  // We need these as part of our request iterator and our final callback
+  let page = 0
+  let count = 0
+  let track = null
+  let isRepeating = true
 
-    let count = 0
-    const tracks = jsonBody.recenttracks.track
-    const track = _.first(tracks) || null
-    const ids = _.pluck(tracks, 'mbid')
+  const testRepeating = () => isRepeating
+  const requestTracks = (requestCb) => {
+    request(fetchUrl + `&page=${++page}`, (__, ___, body) => {
+      const data = JSON.parse(body)
 
-    if (track) {
-      for (let i = 0, m = ids.length; i < m; i++) {
-        if (ids[i] === track.mbid) {
-          count++
-        } else {
-          break
+      if (data.error) {
+        return requestCb(new Error(`${data.error}: ${data.message}`))
+      }
+
+      const tracks = data.recenttracks.track
+      const ids = _.pluck(tracks, 'mbid')
+      track = track || _.first(tracks)
+
+      if (!track) {
+        // If for some reason there are no tracks then we are already done
+        isRepeating = false
+      } else {
+        for (let i = 0, m = ids.length; i < m; i++) {
+          if (ids[i] === track.mbid) {
+            // Increment count if the tracks are the same
+            count++
+          } else {
+            // The next track is not the same id as the first track so
+            // we are done with out whilst loop
+            isRepeating = false
+            break
+          }
         }
       }
-    }
 
-    cb(null, count <= 1 ? {count: null, track: null} : {count, track})
-  })
+      requestCb()
+    })
+  }
+
+  // This is done in an async while loop because the alternative is fetching
+  // the max limit from lastfm (200) but that takes quite a bit of time to return.
+  // So to optimize for the case of <200 repeat listens (which is probably every case)
+  // we fetch LIMIT_EACH at a time and analyze in chunks.
+  async.whilst(
+    testRepeating,
+    requestTracks,
+    (err) => {
+      if (err) {
+        return cb(err)
+      } else {
+        // We only care about repeating so if the count is 1 its not repeating
+        // and we return nulls
+        cb(null, count <= 1 ? {count: null, track: null} : {count, track})
+      }
+    }
+  )
 }

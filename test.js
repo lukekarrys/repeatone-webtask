@@ -24,7 +24,7 @@ if (API_KEY) {
       t.notOk(err, ' no error')
       t.ok(typeof data.count === 'number', 'count is a number')
       t.ok(typeof data.track === 'object', 'track is an object')
-      COUNT && t.equal(data.count, COUNT, 'count is equal')
+      COUNT && t.equal(data.count, parseInt(COUNT, 10), 'count is equal')
       NAME && t.equal(data.track.name, NAME, 'track name')
       ARTIST && t.equal(data.track.artist['#text'], ARTIST, 'artist name')
       t.end()
