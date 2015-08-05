@@ -15,7 +15,7 @@ const DEFAULT_PARAMS = {
 module.exports = (ctx, cb) => {
   const {data} = ctx
 
-  const params = _.assign({api_key: data.API_KEY}, DEFAULT_PARAMS, _.omit(data, 'API_KEY'), {limit: LIMIT_EACH})
+  const params = _.assign({api_key: data.API_KEY}, DEFAULT_PARAMS, _.pick(data, 'user'), {limit: LIMIT_EACH})
   const fetchUrl = `${URI_BASE}${qs.stringify(params)}`
 
   // We need these as part of our request iterator and our final callback

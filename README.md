@@ -15,8 +15,6 @@ I've always been a fan of Repeat One. Whether it was working, driving, studying,
 curl -s https://webtask.it.auth0.com/api/run/wt-lukekarrys-gmail_com-0/repeatone?user=LASTFM_USER
 ```
 
-See the [lastfm docs](http://www.last.fm/api/show/user.getRecentTracks) for other query parameters.
-
 
 ## Create Your Own
 
