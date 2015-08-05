@@ -38,6 +38,6 @@ module.exports = (ctx, cb) => {
       }
     }
 
-    cb(null, count <= 1 ? {count: 0, track} : {count, track})
+    cb(null, count <= 1 ? {count: null, track: null} : {count, track})
   })
 }
