@@ -1,0 +1,49 @@
+{
+  "name": "repeatone-webtask",
+  "description": "Get the number of times a lastfm user has currently listened to a track on repeat.",
+  "version": "1.0.0",
+  "author": "Luke Karrys <luke@lukekarrys.com>",
+  "bugs": {
+    "url": "https://github.com/lukekarrys/repeatone-webtask/issues"
+  },
+  "dependencies": {
+    "lodash": "3.9.3",
+    "qs": "3.1.0",
+    "request": "2.56.0"
+  },
+  "devDependencies": {
+    "babel": "^5.8.3",
+    "babel-tape-runner": "^1.1.0",
+    "precommit-hook": "^3.0.0",
+    "semver": "^5.0.1",
+    "standard": "^4.5.4",
+    "tap-spec": "^4.0.2",
+    "tape": "^4.0.1",
+    "webtask-require-version": "^1.0.1",
+    "wt-cli": "^1.0.3"
+  },
+  "homepage": "https://github.com/lukekarrys/repeatone-webtask#readme",
+  "keywords": [
+    "lastfm",
+    "repeat one"
+  ],
+  "license": "MIT",
+  "main": "repeatone.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/lukekarrys/repeatone-webtask.git"
+  },
+  "scripts": {
+    "container": "wt profile ls",
+    "create": "wt create repeatone.js",
+    "lint": "standard",
+    "logs": "wt logs",
+    "test": "babel-tape-runner test.js | tap-spec",
+    "validate": "npm ls"
+  },
+  "pre-commit": [
+    "lint",
+    "validate",
+    "test"
+  ]
+}
