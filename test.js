@@ -22,11 +22,22 @@ if (API_KEY) {
   test('Returns data with a token', (t) => {
     repeatOne({data: {API_KEY}}, (err, data) => {
       t.notOk(err, ' no error')
-      t.ok(typeof data.count === 'number', 'count is a number')
-      t.ok(typeof data.track === 'object', 'track is an object')
-      COUNT && t.equal(data.count, parseInt(COUNT, 10), 'count is equal')
-      NAME && t.equal(data.track.name, NAME, 'track name')
-      ARTIST && t.equal(data.track.artist['#text'], ARTIST, 'artist name')
+
+      if (COUNT) {
+        t.ok(typeof data.count === 'number', 'count is a number')
+        t.equal(data.count, parseInt(COUNT, 10), 'count is equal')
+      } else {
+        t.equal(data.count, null, 'count is null')
+      }
+
+      if (NAME || ARTIST) {
+        t.ok(typeof data.track === 'object', 'track is an object')
+        NAME && t.equal(data.track.name, NAME, 'track name')
+        ARTIST && t.equal(data.track.artist['#text'], ARTIST, 'artist name')
+      } else {
+        t.equal(data.track, null, 'track is null')
+      }
+
       t.end()
     })
   })

@@ -5,17 +5,19 @@ const qs = require('qs@3.1.0')
 const _ = require('lodash@3.9.3')
 const async = require('async@1.0.0')
 
-const LIMIT_EACH = 5
-const URI_BASE = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&'
+const URI_BASE = 'http://ws.audioscrobbler.com/2.0/?'
 const DEFAULT_PARAMS = {
   user: 'formatfanatic',
-  format: 'json'
+  format: 'json',
+  limit: 5,
+  method: 'user.getrecenttracks'
 }
 
 module.exports = (ctx, cb) => {
   const {data} = ctx
+  const {API_KEY} = data
 
-  const params = _.assign({api_key: data.API_KEY}, DEFAULT_PARAMS, _.pick(data, 'user'), {limit: LIMIT_EACH})
+  const params = _.assign({api_key: API_KEY}, DEFAULT_PARAMS, _.pick(data, 'user'))
   const fetchUrl = `${URI_BASE}${qs.stringify(params)}`
 
   // We need these as part of our request iterator and our final callback
@@ -61,7 +63,7 @@ module.exports = (ctx, cb) => {
   // This is done in an async while loop because the alternative is fetching
   // the max limit from lastfm (200) but that takes quite a bit of time to return.
   // So to optimize for the case of <200 repeat listens (which is probably every case)
-  // we fetch LIMIT_EACH at a time and analyze in chunks.
+  // we fetch 5 at a time and analyze in chunks.
   async.whilst(
     testRepeating,
     requestTracks,
