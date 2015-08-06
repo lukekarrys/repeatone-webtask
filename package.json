@@ -30,6 +30,11 @@
   ],
   "license": "MIT",
   "main": "repeatone.js",
+  "pre-commit": [
+    "lint",
+    "validate",
+    "test"
+  ],
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/lukekarrys/repeatone-webtask.git"
@@ -37,14 +42,10 @@
   "scripts": {
     "container": "wt profile ls",
     "create": "wt create repeatone.js",
+    "init": "wt init",
     "lint": "standard",
     "logs": "wt logs",
     "test": "babel-tape-runner test.js | tap-spec",
     "validate": "npm ls"
-  },
-  "pre-commit": [
-    "lint",
-    "validate",
-    "test"
-  ]
+  }
 }
