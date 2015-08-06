@@ -19,7 +19,7 @@ curl -s https://webtask.it.auth0.com/api/run/wt-lukekarrys-gmail_com-0/repeatone
 ## Create Your Own
 
 ```sh
-npm run init -- YOUR@EMAI.COM
+npm run init -- YOUR@EMAIL.COM
 npm run create -- --secret API_KEY=LASTFM_KEY
 # Your container name will be shown after you create the webtask
 curl -s https://webtask.it.auth0.com/api/run/{CONTAINER_NAME}/repeatone
