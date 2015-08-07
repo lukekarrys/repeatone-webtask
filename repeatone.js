@@ -14,7 +14,7 @@ const DEFAULT_PARAMS = {
 }
 
 const getTrackId = (track) => {
-  return track.mbid || `${track.name}-${track.artist['#text']}-${track.album['#text']}-${track.url}`
+  return track.mbid || track.url || `${track.name}-${track.artist['#text']}`
 }
 
 module.exports = (ctx, cb) => {
