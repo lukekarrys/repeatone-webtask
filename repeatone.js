@@ -13,6 +13,10 @@ const DEFAULT_PARAMS = {
   method: 'user.getrecenttracks'
 }
 
+const getTrackId = (track) => {
+  return track.mbid || `${track.name}-${track.artist['#text']}-${track.album['#text']}-${track.url}`
+}
+
 module.exports = (ctx, cb) => {
   const {data} = ctx
   const {API_KEY} = data
@@ -36,7 +40,7 @@ module.exports = (ctx, cb) => {
       }
 
       const tracks = data.recenttracks.track
-      const ids = _.pluck(tracks, 'mbid')
+      const ids = _.map(tracks, getTrackId)
       track = track || _.first(tracks)
 
       if (!track) {
@@ -44,7 +48,7 @@ module.exports = (ctx, cb) => {
         isRepeating = false
       } else {
         for (let i = 0, m = ids.length; i < m; i++) {
-          if (ids[i] === track.mbid) {
+          if (ids[i] === getTrackId(track)) {
             // Increment count if the tracks are the same
             count++
           } else {
