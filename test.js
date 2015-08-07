@@ -9,10 +9,20 @@ const repeatOne = require('./repeatone')
 const {API_KEY, COUNT, NAME, ARTIST} = process.env
 
 test('Errors without a token', (t) => {
-  repeatOne({data: {}}, (err, count) => {
+  repeatOne({data: {user: 'formatfanatic'}}, (err, count) => {
     t.ok(err, 'has an error')
     t.ok(err instanceof Error, 'is an instance of error')
     t.equal(err.message, '10: Invalid API key - You must be granted a valid key by last.fm')
+    t.notOk(count, 'has no count')
+    t.end()
+  })
+})
+
+test('Errors without a user', (t) => {
+  repeatOne({data: {}}, (err, count) => {
+    t.ok(err, 'has an error')
+    t.ok(err instanceof Error, 'is an instance of error')
+    t.equal(err.message, 'You must specify a user')
     t.notOk(count, 'has no count')
     t.end()
   })
@@ -32,6 +42,7 @@ if (API_KEY) {
 
       if (NAME || ARTIST) {
         t.ok(typeof data.track === 'object', 'track is an object')
+        t.ok(data.track.image[0]['#text'], 'first image exists')
         NAME && t.equal(data.track.name, NAME, 'track name')
         ARTIST && t.equal(data.track.artist['#text'], ARTIST, 'artist name')
       } else {

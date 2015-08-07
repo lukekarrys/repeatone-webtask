@@ -7,27 +7,42 @@ const async = require('async@1.0.0')
 
 const URI_BASE = 'http://ws.audioscrobbler.com/2.0/?'
 const DEFAULT_PARAMS = {
-  user: 'formatfanatic',
   format: 'json',
   limit: 5,
   method: 'user.getrecenttracks'
 }
 
-const getTrackId = (track) => {
-  return track.mbid || track.url || `${track.name}-${track.artist['#text']}`
-}
+const getTrackId = (track) =>
+  track.mbid || track.url || `${track.name}-${track.artist['#text']}`
+
+const mergeTracks = (tracks) => _.reduce(tracks, (res, track) => {
+  if (res === null) {
+    return track
+  } else {
+    if (_.filter(res.image, '#text').length === 0) {
+      res.image = track.image
+    }
+    return res
+  }
+}, null)
 
 module.exports = (ctx, cb) => {
   const {data} = ctx
   const {API_KEY} = data
+  const user = _.escape(data.user)
 
-  const params = _.assign({api_key: API_KEY}, DEFAULT_PARAMS, _.pick(data, 'user'))
+  if (!user) {
+    return cb(new Error(`You must specify a user`))
+  }
+
+  const params = _.assign({user, api_key: API_KEY}, DEFAULT_PARAMS)
   const fetchUrl = `${URI_BASE}${qs.stringify(params)}`
 
   // We need these as part of our request iterator and our final callback
   let page = 0
   let count = 0
   let track = null
+  let repeats = []
   let isRepeating = true
 
   const testRepeating = () => isRepeating
@@ -40,16 +55,16 @@ module.exports = (ctx, cb) => {
       }
 
       const tracks = data.recenttracks.track
-      const ids = _.map(tracks, getTrackId)
       track = track || _.first(tracks)
 
       if (!track) {
         // If for some reason there are no tracks then we are already done
         isRepeating = false
       } else {
-        for (let i = 0, m = ids.length; i < m; i++) {
-          if (ids[i] === getTrackId(track)) {
-            // Increment count if the tracks are the same
+        for (let i = 0, m = tracks.length; i < m; i++) {
+          if (getTrackId(tracks[i]) === getTrackId(track)) {
+            // Increment count and collect track if the tracks are the same
+            repeats.push(tracks[i])
             count++
           } else {
             // The next track is not the same id as the first track so
@@ -77,7 +92,7 @@ module.exports = (ctx, cb) => {
       } else {
         // We only care about repeating so if the count is 1 its not repeating
         // and we return nulls
-        cb(null, count <= 1 ? {count: null, track: null} : {count, track})
+        cb(null, count <= 1 ? {user, count: null, track: null} : {user, count, track: mergeTracks(repeats)})
       }
     }
   )
