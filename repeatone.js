@@ -28,8 +28,7 @@ const mergeTracks = (tracks) => _.reduce(tracks, (res, track) => {
 
 module.exports = (ctx, cb) => {
   const {data} = ctx
-  const {API_KEY} = data
-  const user = _.escape(data.user)
+  const {API_KEY, user} = data
 
   if (!user) {
     return cb(new Error(`You must specify a user`))
@@ -92,7 +91,12 @@ module.exports = (ctx, cb) => {
       } else {
         // We only care about repeating so if the count is 1 its not repeating
         // and we return nulls
-        cb(null, count <= 1 ? {user, count: null, track: null} : {user, count, track: mergeTracks(repeats)})
+        cb(null,
+          _.extend(
+            {user: _.escape(user)},
+            count <= 1 ? {count: null, track: null} : {user, count, track: mergeTracks(repeats)}
+          )
+        )
       }
     }
   )

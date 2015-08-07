@@ -6,10 +6,11 @@ import test from 'tape'
 require('webtask-require-version')
 const repeatOne = require('./repeatone')
 
+const user = 'formatfanatic'
 const {API_KEY, COUNT, NAME, ARTIST} = process.env
 
 test('Errors without a token', (t) => {
-  repeatOne({data: {user: 'formatfanatic'}}, (err, count) => {
+  repeatOne({data: {user}}, (err, count) => {
     t.ok(err, 'has an error')
     t.ok(err instanceof Error, 'is an instance of error')
     t.equal(err.message, '10: Invalid API key - You must be granted a valid key by last.fm')
@@ -30,8 +31,10 @@ test('Errors without a user', (t) => {
 
 if (API_KEY) {
   test('Returns data with a token', (t) => {
-    repeatOne({data: {API_KEY}}, (err, data) => {
+    repeatOne({data: {API_KEY, user}}, (err, data) => {
       t.notOk(err, ' no error')
+
+      t.equal(data.user, user, 'returns the same user')
 
       if (COUNT) {
         t.ok(typeof data.count === 'number', 'count is a number')
