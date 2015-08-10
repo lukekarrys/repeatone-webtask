@@ -26,6 +26,18 @@ const mergeTracks = (tracks) => _.reduce(tracks, (res, track) => {
   }
 }, null)
 
+const getLargestImage = (track) => {
+  const {image} = track
+  return (_.find(image, {size: 'extralarge'}) ||
+    _.find(image, {size: 'large'}) ||
+    _.find(image, {size: 'medium'}) ||
+    _.find(image, {size: 'small'}) || {})['#text']
+}
+
+const toBase64 = (h, b) => {
+  return `data:${h['content-type']};base64,${new Buffer(b).toString('base64')}`
+}
+
 module.exports = (ctx, cb) => {
   const {data} = ctx
   const {API_KEY, user} = data
@@ -89,14 +101,22 @@ module.exports = (ctx, cb) => {
       if (err) {
         return cb(err)
       } else {
-        // We only care about repeating so if the count is 1 its not repeating
-        // and we return nulls
-        cb(null,
-          _.extend(
-            {user: _.escape(user)},
-            count <= 1 ? {count: null, track: null} : {user, count, track: mergeTracks(repeats)}
-          )
-        )
+        const mergedTrack = mergeTracks(repeats)
+        const values = {count, user: _.escape(user), track: mergedTrack}
+        const uri = getLargestImage(values.track)
+        const returnWithImage = (base64) => cb(null, _.assign({base64}, values))
+
+        if (uri) {
+          request({uri, encoding: null}, (error, resp, body) => {
+            if (error || resp.statusCode !== 200) {
+              returnWithImage(null)
+            } else {
+              returnWithImage(toBase64(resp.headers, body))
+            }
+          })
+        } else {
+          returnWithImage(null)
+        }
       }
     }
   )
