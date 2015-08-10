@@ -100,6 +100,8 @@ module.exports = (ctx, cb) => {
     (err) => {
       if (err) {
         return cb(err)
+      } else if (!count) {
+        return cb(null, {user: _.escape(user), count: null, track: null})
       } else {
         const mergedTrack = mergeTracks(repeats)
         const values = {count, user: _.escape(user), track: mergedTrack}
