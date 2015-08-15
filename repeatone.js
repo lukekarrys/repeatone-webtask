@@ -18,6 +18,7 @@ const getTrackId = (track) =>
 
 const getTrackDesc = (track) =>
   `${track.artist['#text']} ${track.album['#text']} ${track.name}`
+  .replace(/\s+/g, ' ')
 
 const mergeTracks = (tracks) => _.reduce(tracks, (res, track) => {
   if (res === null) {
@@ -69,8 +70,6 @@ const fetchItunesImage = (track, cb) => {
 
     const [track] = JSON.parse(body).results || []
     const image = track.artworkUrl100
-
-    console.log(track)
 
     if (!image) {
       return cb(new Error('No image'))
@@ -162,19 +161,16 @@ module.exports = (ctx, cb) => {
         const mergedTrack = mergeTracks(repeats)
         const values = {count, user: _.escape(user), track: mergedTrack}
         const uri = getLargestImage(values.track)
-        const returnWithImage = (base64) => cb(null, _.assign({base64}, values))
+        const returnWithImage = (err, base64, imageSource) => {
+          log(`Fetched ${imageSource} image: ${base64 ? 'success' : err.message}`)
+          cb(null, _.assign({base64, imageSource}, values))
+        }
 
         if (uri) {
           log(`Fetching lastfm image ${uri}`)
-          fetchBase64Image(uri, (err, base64) => {
-            log(`Fetched lastfm image ${err ? err : 'success'}`)
-            returnWithImage(err ? null : base64)
-          })
+          fetchBase64Image(uri, (err, base64) => returnWithImage(err, base64, 'lastfm'))
         } else {
-          fetchItunesImage(mergedTrack, (err, base64) => {
-            log(`Fetched itunes image ${err ? err : 'success'}`)
-            returnWithImage(err ? null : base64)
-          })
+          fetchItunesImage(mergedTrack, (err, base64) => returnWithImage(err, base64, 'itunes'))
         }
       }
     }
