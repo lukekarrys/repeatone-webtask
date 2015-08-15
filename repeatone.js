@@ -17,8 +17,7 @@ const getTrackId = (track) =>
   track.mbid || track.url || `${track.name}-${track.artist['#text']}`
 
 const getTrackDesc = (track) =>
-  `${track.artist['#text']} ${track.album['#text']} ${track.name}`
-  .replace(/\s+/g, ' ')
+  `${track.artist['#text']} ${track.name}`.replace(/\s+/g, ' ')
 
 const mergeTracks = (tracks) => _.reduce(tracks, (res, track) => {
   if (res === null) {
