@@ -1,7 +1,7 @@
 {
   "name": "repeatone-webtask",
   "description": "Get the number of times a lastfm user has currently listened to a track on repeat.",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "author": "Luke Karrys <luke@lukekarrys.com>",
   "bugs": {
     "url": "https://github.com/lukekarrys/repeatone-webtask/issues"
@@ -44,6 +44,7 @@
     "create": "wt create repeatone.js",
     "init": "wt init",
     "lint": "standard",
+    "local": "babel-node example.js",
     "logs": "wt logs",
     "test": "babel-tape-runner test.js | tap-spec",
     "validate": "npm ls"

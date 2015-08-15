@@ -9,20 +9,13 @@ Get the number of times a lastfm user has currently listened to a track on repea
 I've always been a fan of Repeat One. Whether it was working, driving, studying, etc. sometimes I just enjoyed listening to a song 30+ times in a row. This is a webtask that will report whether I (or any lastfm user) is listening to a song on repeat.
 
 
-## Usage
-
-```sh
-curl -s https://webtask.it.auth0.com/api/run/wt-lukekarrys-gmail_com-0/repeatone?user=LASTFM_USER
-```
-
-
 ## Create Your Own
 
 ```sh
-npm run init -- YOUR@EMAIL.COM
+npm run init -- YOUR@EMAIL.COM # Only needed the first time
 npm run create -- --secret API_KEY=LASTFM_KEY
 # Your container name will be shown after you create the webtask
-curl -s https://webtask.it.auth0.com/api/run/{CONTAINER_NAME}/repeatone
+curl -s https://webtask.it.auth0.com/api/run/{CONTAINER_NAME}/repeatone?user=USER
 ```
 
 

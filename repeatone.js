@@ -15,6 +15,9 @@ const DEFAULT_PARAMS = {
 const getTrackId = (track) =>
   track.mbid || track.url || `${track.name}-${track.artist['#text']}`
 
+const getTrackDesc = (track) =>
+  `${track.artist['#text']} ${track.album['#text']} ${track.name}`
+
 const mergeTracks = (tracks) => _.reduce(tracks, (res, track) => {
   if (res === null) {
     return track
@@ -36,6 +39,38 @@ const getLargestImage = (track) => {
 
 const toBase64 = (h, b) => {
   return `data:${h['content-type']};base64,${new Buffer(b).toString('base64')}`
+}
+
+const fetchBase64Image = (uri, cb) => {
+  request({uri, encoding: null}, (error, resp, body) => {
+    if (error || resp.statusCode !== 200) {
+      cb(new Error('No image'))
+    } else {
+      cb(null, toBase64(resp.headers, body))
+    }
+  })
+}
+
+const fetchItunesImage = (track, cb) => {
+  const url = `https://itunes.apple.com/search?media=music&term=${getTrackDesc(track).replace(/ /g, '+')}`
+  request(url, (err, resp, body) => {
+    if (err || resp.statusCode !== 200) {
+      return cb(new Error('Error fetching from iTunes'))
+    }
+
+    if ((body && body.resultCount === 0)) {
+      return cb(new Error('No results'))
+    }
+
+    const [track] = body
+    const image = track.artworkUrl100
+
+    if (!image) {
+      return cb(new Error('No image'))
+    }
+
+    fetchBase64Image(image.replace('.100x100-', '.300x300-'), cb)
+  })
 }
 
 module.exports = (ctx, cb) => {
@@ -109,15 +144,9 @@ module.exports = (ctx, cb) => {
         const returnWithImage = (base64) => cb(null, _.assign({base64}, values))
 
         if (uri) {
-          request({uri, encoding: null}, (error, resp, body) => {
-            if (error || resp.statusCode !== 200) {
-              returnWithImage(null)
-            } else {
-              returnWithImage(toBase64(resp.headers, body))
-            }
-          })
+          fetchBase64Image(uri, (err, base64) => returnWithImage(err ? null : base64))
         } else {
-          returnWithImage(null)
+          fetchItunesImage(mergedTrack, (err, base64) => returnWithImage(err ? null : base64))
         }
       }
     }
