@@ -64,12 +64,14 @@ const fetchItunesImage = (track, cb) => {
       return cb(new Error('Error fetching from iTunes'))
     }
 
-    if ((body && body.resultCount === 0)) {
+    const data = JSON.parse(body)
+
+    if (!data || data.resultCount === 0 || !data.results) {
       return cb(new Error('No results'))
     }
 
-    const [track] = JSON.parse(body).results || []
-    const image = track.artworkUrl100
+    const [track] = data.results || []
+    const image = track && track.artworkUrl100
 
     if (!image) {
       return cb(new Error('No image'))
