@@ -4,6 +4,7 @@ const request = require('request@2.56.0')
 const qs = require('qs@3.1.0')
 const _ = require('lodash@3.9.3')
 const async = require('async@1.0.0')
+const log = console.log.bind(console)
 
 const URI_BASE = 'http://ws.audioscrobbler.com/2.0/?'
 const DEFAULT_PARAMS = {
@@ -52,7 +53,11 @@ const fetchBase64Image = (uri, cb) => {
 }
 
 const fetchItunesImage = (track, cb) => {
-  const url = `https://itunes.apple.com/search?media=music&term=${getTrackDesc(track).replace(/ /g, '+')}`
+  const trackDesc = getTrackDesc(track)
+  const url = `https://itunes.apple.com/search?media=music&term=${trackDesc.replace(/ /g, '+')}`
+
+  log(`Fetching iTunes image ${trackDesc} ${url}`)
+
   request(url, (err, resp, body) => {
     if (err || resp.statusCode !== 200) {
       return cb(new Error('Error fetching from iTunes'))
@@ -62,8 +67,10 @@ const fetchItunesImage = (track, cb) => {
       return cb(new Error('No results'))
     }
 
-    const [track] = body
+    const [track] = JSON.parse(body).results || []
     const image = track.artworkUrl100
+
+    console.log(track)
 
     if (!image) {
       return cb(new Error('No image'))
@@ -81,6 +88,8 @@ module.exports = (ctx, cb) => {
     return cb(new Error(`You must specify a user`))
   }
 
+  log(`Requesting user ${user}`)
+
   const params = _.assign({user, api_key: API_KEY}, DEFAULT_PARAMS)
   const fetchUrl = `${URI_BASE}${qs.stringify(params)}`
 
@@ -93,6 +102,8 @@ module.exports = (ctx, cb) => {
 
   const testRepeating = () => isRepeating
   const requestTracks = (requestCb) => {
+    log(`Fetching page ${page + 1}`)
+
     request(fetchUrl + `&page=${++page}`, (__, ___, body) => {
       const data = JSON.parse(body)
 
@@ -104,15 +115,23 @@ module.exports = (ctx, cb) => {
       track = track || _.first(tracks)
 
       if (!track) {
+        log(`No track`)
+
         // If for some reason there are no tracks then we are already done
         isRepeating = false
       } else {
+        log(`Fetched ${tracks.length} tracks`)
+
         for (let i = 0, m = tracks.length; i < m; i++) {
           if (getTrackId(tracks[i]) === getTrackId(track)) {
+            log(`Tracks match at ${i} index`)
+
             // Increment count and collect track if the tracks are the same
             repeats.push(tracks[i])
             count++
           } else {
+            log(`Tracks dont match at ${i} index`)
+
             // The next track is not the same id as the first track so
             // we are done with out whilst loop
             isRepeating = false
@@ -134,8 +153,10 @@ module.exports = (ctx, cb) => {
     requestTracks,
     (err) => {
       if (err) {
+        log(err)
         return cb(err)
       } else if (!count) {
+        log('No count')
         return cb(null, {user: _.escape(user), count: null, track: null})
       } else {
         const mergedTrack = mergeTracks(repeats)
@@ -144,9 +165,16 @@ module.exports = (ctx, cb) => {
         const returnWithImage = (base64) => cb(null, _.assign({base64}, values))
 
         if (uri) {
-          fetchBase64Image(uri, (err, base64) => returnWithImage(err ? null : base64))
+          log(`Fetching lastfm image ${uri}`)
+          fetchBase64Image(uri, (err, base64) => {
+            log(`Fetched lastfm image ${err ? err : 'success'}`)
+            returnWithImage(err ? null : base64)
+          })
         } else {
-          fetchItunesImage(mergedTrack, (err, base64) => returnWithImage(err ? null : base64))
+          fetchItunesImage(mergedTrack, (err, base64) => {
+            log(`Fetched itunes image ${err ? err : 'success'}`)
+            returnWithImage(err ? null : base64)
+          })
         }
       }
     }
