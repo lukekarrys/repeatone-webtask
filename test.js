@@ -13,7 +13,7 @@ test('Errors without a token', (t) => {
   repeatOne({data: {user}}, (err, count) => {
     t.ok(err, 'has an error')
     t.ok(err instanceof Error, 'is an instance of error')
-    t.equal(err.message, '10: Invalid API key - You must be granted a valid key by last.fm')
+    t.equal(err.message, '6: Invalid parameters - Your request is missing a required parameter')
     t.notOk(count, 'has no count')
     t.end()
   })

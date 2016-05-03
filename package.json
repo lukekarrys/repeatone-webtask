@@ -1,7 +1,7 @@
 {
   "name": "repeatone-webtask",
   "description": "Get the number of times a lastfm user has currently listened to a track on repeat.",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": "Luke Karrys <luke@lukekarrys.com>",
   "bugs": {
     "url": "https://github.com/lukekarrys/repeatone-webtask/issues"
