@@ -7,10 +7,10 @@
     "url": "https://github.com/lukekarrys/repeatone-webtask/issues"
   },
   "dependencies": {
-    "async": "1.0.0",
-    "lodash": "3.9.3",
-    "qs": "3.1.0",
-    "request": "2.56.0"
+    "async": "2.0.1",
+    "lodash": "4.14.2",
+    "qs": "6.2.1",
+    "request": "2.74.0"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
