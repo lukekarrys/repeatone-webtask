@@ -32,7 +32,7 @@ test('Errors without a user', (t) => {
 if (API_KEY) {
   test('Returns data with a token', (t) => {
     repeatOne({data: {API_KEY, user}}, (err, data) => {
-      t.notOk(err, ' no error')
+      t.notOk(err, 'no error')
 
       t.equal(data.user, user, 'returns the same user')
 
