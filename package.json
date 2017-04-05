@@ -10,7 +10,7 @@
     "async": "1.0.0",
     "lodash": "3.9.3",
     "qs": "3.1.0",
-    "request": "2.56.0"
+    "request": "2.75.0"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
