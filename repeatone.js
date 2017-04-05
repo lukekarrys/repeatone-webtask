@@ -39,7 +39,7 @@ const getLargestImage = (track) => {
 }
 
 const toBase64 = (h, b) => {
-  return `data:${h['content-type']};base64,${new Buffer(b).toString('base64')}`
+  return `data:${h['content-type']};base64,${Buffer.from(b).toString('base64')}`
 }
 
 const fetchBase64Image = (uri, cb) => {
