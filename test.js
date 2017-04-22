@@ -1,5 +1,7 @@
 import test from 'tape'
+import dotenv from 'dotenv'
 
+dotenv.config()
 const repeatOne = require('./repeatone')
 
 const user = 'formatfanatic'
