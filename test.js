@@ -1,9 +1,5 @@
 import test from 'tape'
 
-// Override default require to allow for @x.y.z syntax
-// Also, webtask needs to use 'require' here instead of ES6
-// import because of babel (I think)
-require('webtask-require-version')
 const repeatOne = require('./repeatone')
 
 const user = 'formatfanatic'

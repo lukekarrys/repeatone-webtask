@@ -22,11 +22,6 @@ curl -s https://webtask.it.auth0.com/api/run/{CONTAINER_NAME}/repeatone?user=USE
 ```
 
 
-## Contributing
-
-Only the [whitelisted webtask.io](https://tehsis.github.io/webtaskio-canirequire/) modules can be used.
-
-
 ## Tests
 
 `npm run test`
