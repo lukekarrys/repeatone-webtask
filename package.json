@@ -39,7 +39,7 @@
   },
   "scripts": {
     "container": "wt profile ls",
-    "create": "wt create repeatone.js",
+    "create": "wt create --secrets-file .env repeatone.js",
     "init": "wt init",
     "lint": "standard",
     "local": "wt serve --secrets-file .env repeatone.js",

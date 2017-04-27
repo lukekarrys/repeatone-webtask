@@ -16,9 +16,10 @@ I've always been a fan of Repeat One. Whether it was working, driving, studying,
 
 ```sh
 npm run init -- YOUR@EMAIL.COM # Only needed the first time
-npm run create -- --secret API_KEY=LASTFM_KEY
+cp .env.example .env # Update with your lastfm API_KEY
+npm run create -- --secrets-file .env
 # Your container name will be shown after you create the webtask
-curl -s https://webtask.it.auth0.com/api/run/{CONTAINER_NAME}/repeatone?user=USER
+curl -s https://wt-{CONTAINER_NAME}.run.webtask.io/repeatone-webtask?user=USER
 ```
 
 
