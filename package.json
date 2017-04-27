@@ -10,8 +10,7 @@
     "async": "^2.3.0",
     "lodash": "^4.17.4",
     "qs": "^6.4.0",
-    "request": "^2.81.0",
-    "safe-buffer": "^5.0.1"
+    "request": "^2.81.0"
   },
   "devDependencies": {
     "dotenv": "^4.0.0",

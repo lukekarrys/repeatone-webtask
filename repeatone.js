@@ -4,7 +4,6 @@ const request = require('request')
 const qs = require('qs')
 const _ = require('lodash')
 const async = require('async')
-const Buffer = require('safe-buffer').Buffer
 const log = console.log.bind(console)
 
 const URI_BASE = 'http://ws.audioscrobbler.com/2.0/?'
@@ -40,7 +39,9 @@ const getLargestImage = (track) => {
 }
 
 const toBase64 = (h, b) => {
-  return `data:${h['content-type']};base64,${Buffer.from(b).toString('base64')}`
+  // eslint-disable-next-line node/no-deprecated-api
+  const img = new Buffer(b).toString('base64')
+  return `data:${h['content-type']};base64,${img}`
 }
 
 const fetchBase64Image = (uri, cb) => {
