@@ -28,6 +28,11 @@ curl -s https://wt-{CONTAINER_NAME}.run.webtask.io/repeatone-webtask?user=USER
 `npm run test`
 
 
+## Contributing
+
+To be run locally, this requires `node >= 6.0.0`. When deployed it uses `use latest` so `wt-cli` builds it with `babel`.
+
+
 ## License
 
 MIT
