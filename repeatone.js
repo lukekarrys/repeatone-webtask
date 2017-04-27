@@ -1,9 +1,10 @@
 'use latest'
 
-const request = require('request@2.56.0')
-const qs = require('qs@3.1.0')
-const _ = require('lodash@3.9.3')
-const async = require('async@1.0.0')
+const request = require('request')
+const qs = require('qs')
+const _ = require('lodash')
+const async = require('async')
+const Buffer = require('safe-buffer').Buffer
 const log = console.log.bind(console)
 
 const URI_BASE = 'http://ws.audioscrobbler.com/2.0/?'
