@@ -5,6 +5,7 @@ Get the number of times a lastfm user has currently listened to a track on repea
 
 [![Build Status](https://travis-ci.org/lukekarrys/repeatone-webtask.png?branch=master)](https://travis-ci.org/lukekarrys/repeatone-webtask)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
+[![Greenkeeper badge](https://badges.greenkeeper.io/lukekarrys/repeatone-webtask.svg)](https://greenkeeper.io/)
 
 
 ## Why?
